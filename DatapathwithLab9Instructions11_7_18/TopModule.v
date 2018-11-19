@@ -8,7 +8,7 @@
 // Module - TopModule.v
 ///////////////////////////////////////////////////////////////////////////////
 
-module TopModule(Clk, Rst, PullHiReg_output, PullLoReg_output, PCResult_Fetch_Top, MemReg_WRITE_Decode);
+module TopModule(Clk, Rst, PCResult_Fetch_Top, MemReg_WRITE_Decode, PullHiReg_output, PullLoReg_output);
 
 input Clk, Rst;
 output wire [31:0] PullHiReg_output, PullLoReg_output, PCResult_Fetch_Top, MemReg_WRITE_Decode;
