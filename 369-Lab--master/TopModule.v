@@ -21,9 +21,9 @@ reg [31:0] AddressRs_Decode_IDEX, AddressRt_Decode_IDEX, RD_Decode_IDEX;//switch
 wire [31:0] RtRd_MEMWB_Decode, RS_Decode_IDEX,RT_Decode_IDEX, SignExt_Decode_IDEX, ZeroExt_Decode_IDEX;
 wire RegWrite_MEMWB_Decode, Branch_Decode_IDEX, MemRead_Decode_IDEX, RegWrite_Decode_IDEX, JRegControl_Decode_IDEX, JRegControl_IDEX_EXMEM;
 wire [5:0] ALUOp_Decode_IDEX;
-wire [1:0] RegDst_Decode_IDEX, ALUSrc1_Decode_IDEX, ALUSrc0_Decode_IDEX, MuxStore_Decode_IDEX, MuxLoad_Decode_IDEX,MemWrite_Decode_IDEX;//switched MemWrite_Decode_IDEX from 1'b to 2'b
+wire [1:0] RegDst_Decode_IDEX, ALUSrc1_Decode_IDEX, ALUSrc0_Decode_IDEX, MuxStore_Decode_IDEX, MuxLoad_Decode_IDEX;
 wire [31:0] MemReg_WRITE_Decode;
-
+wire MemWrite_Decode_IDEX;//switched MemWrite_Decode_IDEX from 1'b to 2'b wrong should be 1
 wire [31:0] PCAdder_IDEX_Execution, RS_IDEX_Execution, RT_IDEX_Execution, AddressRs_IDEX_Execution, AddressRt_IDEX_Execution, RD_IDEX_Execution, SignExt_IDEX_Execution, ZeroExt_IDEX_Execution;
 wire Branch_IDEX_EXMEM, JRegControl_EXMEM_Memory, 
      MemRead_IDEX_EXMEM, MemWrite_IDEX_EXMEM, RegWrite_IDEX_EXMEM;
@@ -56,7 +56,7 @@ wire [31:0] PCSrc_MuxJump, MuxJump_PC, PC_IM_PCAdder;
 reg [3:0] PCAdderResult_Concat_SL2;
 reg [31:0] JumpAddress_in;
                             
-ClkDiv ClkDiv_1(Clk, Rst_ClkDiv, ClkOut);
+//ClkDiv ClkDiv_1(Clk, Rst_ClkDiv, ClkOut); not in use for now
                             
 Mux32Bit2To1 PCSrc(PCSrc_MuxJump, PCAdder_Fetch_IFID, PCAdder_JReg_Memory_Fetch, Branch_Fetch);
 ProgramCounter PC_1(MuxJump_PC, PC_IM_PCAdder, Rst, Clk);

@@ -74,14 +74,14 @@ module DataMemory(Address, WriteData, Clk, MemWrite, MemRead, ReadData_out);
         end
     end
     
-	always @(Clk,Address,MemWrite,WriteData,Index) begin// added Address,MemWrite,WriteData,Index cuz of syn warnings
+	always @(posedge Clk) begin//,Address,MemWrite,WriteData,Index) begin// added Address,MemWrite,WriteData,Index cuz of syn warnings
 	Index <= Address[9:2];//removed Address[9:2]-1 addded it back
         if (MemWrite == 1'b1) begin
             memory[Index] <= WriteData;
         end
     end    
     
-      always @(*) begin
+      always @(*) begin//*
       Index <= Address[9:2];//removed Address[9:2]-1
         if (MemRead == 1'b1) begin
            ReadData_out <= memory[Index];

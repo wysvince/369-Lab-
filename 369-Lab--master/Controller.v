@@ -22,7 +22,7 @@ module Controller(readOp, readRS, readRT, read10_6, read5_0, JumpControl, JRegCo
     output reg JumpControl, JRegControl;							
 	output reg Branch;			// (1) when operation is branch related
 	output reg MemRead;			// (1) when reading from data memory
-	output reg [1:0] MemWrite;		// (1) when writing to data memory
+	output reg MemWrite;		// (1) when writing to data memory
 	output reg RegWrite;		// (1) when writing to register
 	output reg [1:0] MemReg;			// (1) when write from data memory to register
 	
@@ -35,7 +35,7 @@ module Controller(readOp, readRS, readRT, read10_6, read5_0, JumpControl, JRegCo
 	    ALUOp <= 6'dx;RegDst <= 2'dx;ALUSrc0 <= 2'dx;ALUSrc1 <= 2'dx;
 	    MuxStore <= 2'dx;MuxLoad <= 2'dx;JumpControl <= 1'dx; 
 	    JRegControl <= 1'dx;Branch <= 1'dx;MemRead <= 1'dx;
-	    MemWrite <= 2'dx;RegWrite <= 1'dx; MemReg <= 2'dx;
+	    MemWrite <= 1'dx;RegWrite <= 1'dx; MemReg <= 2'dx;
 
         // nop
         if (readOp == 0 && readRS == 0 && readRT == 0 && read10_6 == 0 && read5_0 == 0) begin
