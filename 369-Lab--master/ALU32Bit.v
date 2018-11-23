@@ -30,7 +30,7 @@ module ALU32Bit(ALUControl, A, B, ALUResult, Zero, HI_in, LO_in, HI_out, LO_out)
 
 	input [5:0] ALUControl; 		// control bits for ALU operation
                                		// you need to adjust the bitwidth as needed
-	input [31:0] A, B;	   	 		// inputs from Register
+	input signed [31:0] A, B;	   	 		// inputs from Register
 
 	output reg [31:0] ALUResult;		// answer
 	output reg Zero;	   		    	// Zero=1 if ALUResult == 0
@@ -41,9 +41,9 @@ module ALU32Bit(ALUControl, A, B, ALUResult, Zero, HI_in, LO_in, HI_out, LO_out)
 
 	reg    [31:0] temp0;
 	reg    [31:0] temp4;
-	reg    [63:0] temp1;
-	reg    [63:0] temp2; 
-	reg    [63:0] temp3;	          // temp variable 64bits
+	reg signed [63:0] temp1;
+	reg signed [63:0] temp2; 
+	reg signed [63:0] temp3;	          // temp variable 64bits
 	reg    [4:0]  sa;				  // shift amount 5bits
 	reg    [4:0]  i;
  
@@ -63,7 +63,7 @@ module ALU32Bit(ALUControl, A, B, ALUResult, Zero, HI_in, LO_in, HI_out, LO_out)
 		end
 		// madd
 		else if(ALUControl == 6'd2) begin
-			temp1 = {16'd0, A} * {16'd0, B};
+			temp1 = A * B;
 			temp2 = {HI_in, LO_in};
 			temp3 = temp1 + temp2;
 			HI_out <= temp3[63:32];
@@ -152,7 +152,7 @@ module ALU32Bit(ALUControl, A, B, ALUResult, Zero, HI_in, LO_in, HI_out, LO_out)
 		end
 		// mult: {$hi, $lo} = ($rs Ã- $rt)
 		else if(ALUControl == 6'd19) begin
-			temp1 = {16'd0, A} * {16'd0, B};
+			temp1 = A * B;//switched from {16'd0,A}*{16'd0,B} lab 9 intruction 252 hi reg had the wrong value
 			LO_out <= temp1[31:0];
 			HI_out <= temp1[63:32];
 		end
@@ -278,7 +278,7 @@ module ALU32Bit(ALUControl, A, B, ALUResult, Zero, HI_in, LO_in, HI_out, LO_out)
 		end
 		// andi
 		else if(ALUControl == 6'd35) begin
-			ALUResult <= A + B;
+			ALUResult <= A & B;
 		end
 		// ori
 		else if(ALUControl == 6'd36) begin

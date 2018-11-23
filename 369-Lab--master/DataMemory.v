@@ -51,23 +51,23 @@ module DataMemory(Address, WriteData, Clk, MemWrite, MemRead, ReadData_out);
     initial begin
         for(i = 0; i< 1024;i=i+1)begin
             if(i == 0) begin
-                memory[i] <= 32'h02108824;//00000000;  // 1
+                memory[i] <= 32'h00000000;//32'h02108824; for something else but 32'h00000000 for lab18  // 1
             end
-//            else if(i == 1) begin
-//                memory[i] <= 32'h00000001;  //  2
-//            end
-//            else if(i == 2) begin
-//                memory[i] <= 32'h00000002;  //  2
-//            end
-//            else if(i == 3) begin
-//                memory[i] <= 32'h00000003;  //  2
-//            end
-//            else if(i == 4) begin
-//                memory[i] <= 32'h00000004;  //  2
-//            end
-//            else if(i == 5) begin
-//                memory[i] <=-32'h00000001;  //  2
-//            end
+            else if(i == 1) begin
+                memory[i] <= 32'h00000001;  //  1
+            end
+            else if(i == 2) begin
+                memory[i] <= 32'h00000002;  //  32'hffffffff for something else but 32'h00000002;
+            end
+            else if(i == 1) begin
+                memory[i] <= 32'h00000003;  //  4 for lab 18
+            end            
+            else if(i == 1) begin
+                memory[i] <= 32'h00000004;  //  4 for lab 18
+            end            
+            else if(i == 1) begin
+                memory[i] <= -32'h00000001;  //  -1 for lab 18
+            end            
             else begin
                 memory[i] <= 32'd0;
             end
@@ -75,14 +75,14 @@ module DataMemory(Address, WriteData, Clk, MemWrite, MemRead, ReadData_out);
     end
     
 	always @(Clk,Address,MemWrite,WriteData,Index) begin// added Address,MemWrite,WriteData,Index cuz of syn warnings
-	Index <= Address[9:2] - 1;
+	Index <= Address[9:2];//removed Address[9:2]-1 addded it back
         if (MemWrite == 1'b1) begin
             memory[Index] <= WriteData;
         end
     end    
     
-      always @(*) begin// switched from * cuz of syn warnings
-      Index <= Address[9:2] - 1;
+      always @(*) begin
+      Index <= Address[9:2];//removed Address[9:2]-1
         if (MemRead == 1'b1) begin
            ReadData_out <= memory[Index];
         end

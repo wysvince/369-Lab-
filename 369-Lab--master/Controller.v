@@ -58,7 +58,7 @@ module Controller(readOp, readRS, readRT, read10_6, read5_0, JumpControl, JRegCo
 		end
 		// srl
 		if(readOp == 6'd0 && readRS == 5'd0 && read5_0 == 6'd2) begin
-		ALUOp <= 6'd4; RegDst <= 2'b01; ALUSrc0 <= 2'b10; ALUSrc1 <= 2'b01; Branch <= 0;
+		ALUOp <= 6'd4; RegDst <= 2'b01; ALUSrc0 <= 2'b10; ALUSrc1 <= 2'b10; Branch <= 0;
 		MemRead <= 0; MemWrite <= 1'b0; RegWrite <= 1; MemReg <= 0; JumpControl <= 0; JRegControl <= 0;
 		end
 		// mul
@@ -114,7 +114,7 @@ module Controller(readOp, readRS, readRT, read10_6, read5_0, JumpControl, JRegCo
 		// mfhi
 		if(readOp == 6'd0 && readRS == 5'd0 && readRT == 5'd0 && read10_6 == 5'd0 && read5_0 == 6'd16) begin
 		ALUOp <= 6'd15; RegDst <= 2'b01; Branch <= 0; MemRead <= 0; MemWrite <= 1'b0; 
-		RegWrite <= 1;  JumpControl <= 0; JRegControl <= 0;
+		RegWrite <= 1;  JumpControl <= 0; JRegControl <= 0; MemReg <= 2'd0;
 		end
 		// mthi
 		if(readOp == 6'd0 && readRT == 5'd0 && read10_6 == 5'd0 && read5_0 == 6'd17) begin
@@ -124,7 +124,7 @@ module Controller(readOp, readRS, readRT, read10_6, read5_0, JumpControl, JRegCo
 		// mflo
 		if(readOp == 6'd0 && readRS == 5'd0 && readRT == 5'd0 && read10_6 == 5'd0 && read5_0 == 6'd18) begin
 		ALUOp <= 6'd17; RegDst <= 2'b01; Branch <= 0; MemRead <= 0; MemWrite <= 1'b0; 
-		RegWrite <= 1;  JumpControl <= 0; JRegControl <= 0;
+		RegWrite <= 1;  JumpControl <= 0; JRegControl <= 0;MemReg <= 2'd0;
 		end
 		// mtlo
 		if(readOp == 6'd0 && readRT == 5'd0 && read10_6 == 5'd0 && read5_0 == 6'd19) begin
@@ -198,7 +198,7 @@ module Controller(readOp, readRS, readRT, read10_6, read5_0, JumpControl, JRegCo
 		end
 		// addiu
 		if(readOp == 6'd9) begin
-		ALUOp <= 6'd32; RegDst <= 0; ALUSrc0 <= 2'b10; ALUSrc1 <= 0; Branch <= 0; 
+		ALUOp <= 6'd32; RegDst <= 0; ALUSrc0 <= 2'b01; ALUSrc1 <= 2'b00; Branch <= 0; 
 		MemRead <= 0; MemWrite <= 1'b0; RegWrite <= 1;  MemReg <= 0; JumpControl <= 0; JRegControl <= 0;
 		end
 		// slti
@@ -213,7 +213,7 @@ module Controller(readOp, readRS, readRT, read10_6, read5_0, JumpControl, JRegCo
 		end
 		// andi
 		if(readOp == 6'd12) begin
-		ALUOp <= 6'd35; RegDst <= 0; ALUSrc0 <= 2'b01; ALUSrc1 <= 0; Branch <= 0; 
+		ALUOp <= 6'd35; RegDst <= 0; ALUSrc0 <= 2'b10; ALUSrc1 <= 2'b00; Branch <= 0; 
 		MemRead <= 0; MemWrite <= 1'b0; RegWrite <= 1;  MemReg <= 0; JumpControl <= 0; JRegControl <= 0;
 		end
 		// ori
@@ -244,34 +244,34 @@ module Controller(readOp, readRS, readRT, read10_6, read5_0, JumpControl, JRegCo
 		end
 		// lb
 		if(readOp == 6'd32) begin
-		ALUOp <= 6'd41; RegDst <= 0; ALUSrc0 <= 2'd1; ALUSrc1 <= 2'd1; Branch <= 0;
+		ALUOp <= 6'd41; RegDst <= 0; ALUSrc0 <= 2'd2; ALUSrc1 <= 2'd0; Branch <= 0;
 		MemRead <= 1; MemWrite <= 1'b0; RegWrite <= 1;   MemReg <= 2'd1; MuxLoad <= 2'd2; 
 		JumpControl <= 0; JRegControl <= 0;
 		end
 		// lh
 		if(readOp == 6'd33) begin
-		ALUOp <= 6'd42; RegDst <= 0; ALUSrc0 <= 2'd1; ALUSrc1 <= 2'd1; Branch <= 0;
+		ALUOp <= 6'd42; RegDst <= 0; ALUSrc0 <= 2'd2; ALUSrc1 <= 2'd0; Branch <= 0;
 		MemRead <= 1; MemWrite <= 1'b0; RegWrite <= 1; MemReg <= 2'd1; MuxLoad <= 2'd1; 
 		JumpControl <= 0; JRegControl <= 0;
 		end
 		// lw
 		if(readOp == 6'd35) begin
-		ALUOp <= 6'd43; RegDst <= 0; ALUSrc0 <= 2'd1; ALUSrc1 <= 2'd1; Branch <= 0; JRegControl <= 0;
+		ALUOp <= 6'd43; RegDst <= 0; ALUSrc0 <= 2'd2; ALUSrc1 <= 2'd0; Branch <= 0; JRegControl <= 0;
 		MemRead <= 1; MemWrite <= 1'b0; RegWrite <= 1;   MemReg <= 2'd1; MuxLoad <= 2'd0; JumpControl <= 0; 
 		end
 		// sb
 		if(readOp == 6'd40) begin
-		ALUOp <= 6'd44; ALUSrc0 <= 2'd1; ALUSrc1 <= 2'd1; Branch <= 0; RegWrite <= 0;
+		ALUOp <= 6'd44; ALUSrc0 <= 2'd1; ALUSrc1 <= 2'd0; Branch <= 0; RegWrite <= 1'dx;
 		MemRead <= 0; MemWrite <= 1'b1; MuxStore <= 2'd2; JumpControl <= 0; JRegControl <= 0;
 		end
 		// sh
 		if(readOp == 6'd41) begin
-		ALUOp <= 6'd45; ALUSrc0 <= 2'd1; ALUSrc1 <= 2'd1; Branch <= 0; RegWrite <= 0;
+		ALUOp <= 6'd45; ALUSrc0 <= 2'd1; ALUSrc1 <= 2'd0; Branch <= 0; RegWrite <= 1'dx;
 		MemRead <= 0; MemWrite <= 1'b1; MemReg <= 0;  MuxStore <= 2'd1; JumpControl <= 0; JRegControl <= 0;
 		end
 		// sw
 		if(readOp == 6'd43) begin
-		ALUOp <= 6'd46; ALUSrc0 <= 2'd1; ALUSrc1 <= 2'd1; Branch <= 0; RegWrite <= 0;
+		ALUOp <= 6'd46; ALUSrc0 <= 2'd1; ALUSrc1 <= 2'd0; Branch <= 0; RegWrite <= 1'dx;
 		MemRead <= 0; MemWrite <= 1'b1; MuxStore <= 2'd0; JumpControl <= 0; JRegControl <= 0;
 		end
 		// bgez
