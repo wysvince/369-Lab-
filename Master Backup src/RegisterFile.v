@@ -90,7 +90,7 @@ module RegisterFile(ReadReg1, ReadReg2, WriteReg, WriteData, RegWrite, Clk, Rst,
     end
        
     // writes data to register address ReadReg1 & ReadReg2 at positive edge Clk
-    always@(posedge Clk) begin// switched from RegWrite, WriteData cuz of syn warnings
+    always@(negedge Clk) begin// switched from RegWrite, WriteData cuz of syn warnings
        if(RegWrite == 1 && WriteReg != 0)begin
 //           if(WriteReg == 32'd31)begin
 //                Register[WriteReg] <= 32'h8000018;

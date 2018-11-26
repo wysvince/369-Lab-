@@ -15,8 +15,8 @@ input [31:0] EXMEM_Fwd_RegDst, MEMWB_Fwd_RegDst;
 output reg [1:0] Fwd_A, Fwd_B;
 
 always@(*)begin
-    Fwd_A <= 2'bxx;
-    Fwd_B <= 2'bxx;
+    Fwd_A <= 2'b00;
+    Fwd_B <= 2'b00;
     
     // check types of operation that requires Forwarding
 //    if(Controller_Fwd_OpCode == 0)begin

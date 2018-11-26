@@ -186,6 +186,7 @@ HiLoReg HiLoReg_1(ALU_HI, ALU_LO, HI_ALU, LO_ALU, Clk, Rst);
 //           MEMWB_Fwd_RegWrite, MEMWB_Fwd_RegDst,
 //           Controller_Fwd_OpCode, ALUSrc0, ALUSrc1, 
 //           Fwd_A, Fwd_B);
+
 FWD FWD_1(AddressRs_IDEX_Execution, RD_IDEX_Execution, AddressRt_IDEX_Execution, 
           RegWrite_EXMEM_MEMWB, PC2Adder_EXMEM_MEMWB, 
           RegWrite_MEMWB_Decode, RtRd_MEMWB_Decode,
