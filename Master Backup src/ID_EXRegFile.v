@@ -126,6 +126,5 @@ module ID_EX_Reg(    RegDst_in, ALUOp_in, ALUSrc0_in, ALUSrc1_in, MuxStore_in,  
             Rd_out <= Rd_in;
             JRegControl_out <= JRegControl_in; 
         end
-	end
-
+    end
 endmodule

@@ -55,7 +55,7 @@ module ALU32Bit(ALUControl, A, B, ALUResult, Zero, HI_in, LO_in, HI_out, LO_out)
 	always @(*) begin
 		// nop
 		if(ALUControl == 6'd0) begin
-            ALUResult <= 0;
+            ALUResult <= 32'd0;
         end
 	 else if(ALUControl == 6'd1) begin
 			sa = B[10:6];

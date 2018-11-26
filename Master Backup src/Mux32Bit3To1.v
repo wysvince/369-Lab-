@@ -18,7 +18,7 @@ module Mux32Bit3To1(out, inA, inB, inC, sel);
     output reg signed [31:0] out;
     
     always@(*) begin
-        //out <= 32'dx;
+        //out <= 32'd0;
         if(sel == 2'b00) begin
             out <= inA;
         end

@@ -63,8 +63,8 @@ wire flush, IFID_flush, Controller_flush;
 Mux32Bit2To1 PCSrc(PCSrc_MuxJump, PCAdder_Fetch_IFID, PCAdder_JReg_Memory_Fetch, Branch_Fetch);
 // // Mux32Bit3To1(out, inA, inB, inC, sel);
 Mux32Bit2To1 HDUFlush(PCResult, MuxJump_PC, PC_IM_PCAdder, flush);
-//ProgramCounter(Address, PCResult, Rst, Clk);
-ProgramCounter PC_1(PCResult, PC_IM_PCAdder, Rst, Clk);
+//ProgramCounter(Address, PCResult, flush, Rst, Clk);
+ProgramCounter PC_1(PCResult, PC_IM_PCAdder, flush, Rst, Clk);
 InstructionMemory IM_1(PC_IM_PCAdder, INSTR_Fetch_IFID); 
 PCAdder PCAdder_1(PC_IM_PCAdder, PCAdder_Fetch_IFID);
 
@@ -186,6 +186,7 @@ HiLoReg HiLoReg_1(ALU_HI, ALU_LO, HI_ALU, LO_ALU, Clk, Rst);
 //           MEMWB_Fwd_RegWrite, MEMWB_Fwd_RegDst,
 //           Controller_Fwd_OpCode, ALUSrc0, ALUSrc1, 
 //           Fwd_A, Fwd_B);
+
 FWD FWD_1(AddressRs_IDEX_Execution, RD_IDEX_Execution, AddressRt_IDEX_Execution, 
           RegWrite_EXMEM_MEMWB, PC2Adder_EXMEM_MEMWB, 
           RegWrite_MEMWB_Decode, RtRd_MEMWB_Decode,
