@@ -71,26 +71,16 @@ module RegisterFile(ReadReg1, ReadReg2, WriteReg, WriteData, RegWrite, Clk, Rst,
 //	end
 	
 	initial begin
-	  
-//	   for(i = 0; i < 32; i = i + 1)begin
-//	         if (i==0) begin
-//	           Register[0] <= 0;
-//	         end	         
-//            else begin//Register[i] <= 32'h0;
-//                Register[i] <= 32'd0;
+	   for(i = 0; i < 32; i = i + 1)begin
+	         if (i==0) begin
+	           Register[0] <= 0;
+	         end	         
+            else begin//Register[i] <= 32'h0;
+                Register[i] <= 32'd0;
                 
-//            end
-//        end
-        Register[0] <= 32'd0;
-        Register[16] <= 32'd2;
-        Register[17] <= 32'd5;
-        Register[18] <= 32'd4;
-        Register[19] <= 32'd1;
-        Register[20] <= 32'd3;
-        Register[21] <= 32'd8;
-        Register[22] <= 32'd10;
-        Register[23] <= 32'd4;
-        Register[24] <= 32'd52;
+            end
+            Register[17] <= 32'd300;
+        end
 	end
 	
 	

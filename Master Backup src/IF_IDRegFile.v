@@ -1,8 +1,8 @@
 `timescale 1ns / 1ps
 
-module IF_ID_Reg( Clk, Rst, PCAdder_in, Instruction_in, PCAdder_out, Instruction_out);
+module IF_ID_Reg( Clk, Rst, IFID_flush, PCAdder_in, Instruction_in, PCAdder_out, Instruction_out);
 
-	input Clk, Rst;
+	input Clk, Rst, IFID_flush;
 	input [31:0] PCAdder_in, Instruction_in;
 	reg [31:0] readPCAdder, readInstruction;
 	output reg [31:0]  PCAdder_out, Instruction_out;
@@ -16,8 +16,14 @@ module IF_ID_Reg( Clk, Rst, PCAdder_in, Instruction_in, PCAdder_out, Instruction
 	
 	 //get inputs at negative edge Clk
    always@(negedge Clk) begin 
-      readPCAdder <= PCAdder_in;
-      readInstruction <= Instruction_in;
+      if(IFID_flush == 1)begin
+            readPCAdder <= PCAdder_in;
+            readInstruction <= 32'd0;
+      end
+      else begin
+          readPCAdder <= PCAdder_in;
+          readInstruction <= Instruction_in;
+      end
    end
     
     // set outputs at positive edge Clk

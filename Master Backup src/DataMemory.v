@@ -103,9 +103,9 @@ module DataMemory(Address, WriteData, Clk, MemWrite, MemRead, ReadData_out);
         if (MemRead == 1'b1) begin
            ReadData_out <= memory[Index];
         end
-        else if (MemRead == 0) begin
-           ReadData_out <= 32'h0; 
-        end   
+//        else if (MemRead == 0) begin
+//           ReadData_out <= 32'h0; 
+//        end   
      end    
 endmodule
 

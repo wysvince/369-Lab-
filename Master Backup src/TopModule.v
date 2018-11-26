@@ -55,13 +55,16 @@ wire ClkOut;
 wire [31:0] PCSrc_MuxJump, MuxJump_PC, PC_IM_PCAdder;
 reg [3:0] PCAdderResult_Concat_SL2;
 reg [31:0] JumpAddress_in;
+wire flush;
                             
 //ClkDiv ClkDiv_1(Clk, Rst_ClkDiv, ClkOut); not in use for now
                             
 Mux32Bit2To1 PCSrc(PCSrc_MuxJump, PCAdder_Fetch_IFID, PCAdder_JReg_Memory_Fetch, Branch_Fetch);
 ProgramCounter PC_1(MuxJump_PC, PC_IM_PCAdder, Rst, Clk);
 InstructionMemory IM_1(PC_IM_PCAdder, INSTR_Fetch_IFID); 
-PCAdder PCAdder_1(PC_IM_PCAdder, PCAdder_Fetch_IFID);
+// module PCAdder(PCResult, flush, PCAddResult);
+PCAdder PCAdder_1(PC_IM_PCAdder, flush, PCAdder_Fetch_IFID);
+
                             
 always@(PCAdder_Fetch_IFID, PC_IM_PCAdder, JumpSL2_Decode_Fetch,PCAdderResult_Concat_SL2)begin//added cuz of syn warning PCAdderResult_Concat_SL2
         PCAdderResult_Concat_SL2 <= PCAdder_Fetch_IFID[31:28];
@@ -79,7 +82,9 @@ Mux32Bit2To1 MuxJump(MuxJump_PC, PCSrc_MuxJump, JumpAddress_in, JumpControl_Deco
 
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 //#FETCH to DECODE#
-IF_ID_Reg IF_ID_Reg_1(Clk, Rst, PCAdder_Fetch_IFID, INSTR_Fetch_IFID, PCAdder_IFID_IDEX, INSTR_IFID_Decode);
+wire IFID_flush;
+//module IF_ID_Reg( Clk, Rst, IFID_Write, PCAdder_in, Instruction_in, PCAdder_out, Instruction_out);
+IF_ID_Reg IF_ID_Reg_1(Clk, Rst, IFID_flush, PCAdder_Fetch_IFID, INSTR_Fetch_IFID, PCAdder_IFID_IDEX, INSTR_IFID_Decode);
 
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 //#DECODE STAGE#
@@ -108,10 +113,19 @@ end
 
 ShiftLeft2 SL2_Jump({6'd0,Jump_IM_SL2}, JumpSL2_Decode_Fetch);
 
+// Hazard
+wire Controller_flush;
+wire [5:0] ALUOp_output;
+//module HDU(EXE_WriteRegDst, IFID_AddressRs, IFID_AddressRt, flush, IFID_flush, Controller_flush);
+HDU HDU_1(MemRead_IDEX_EXMEM, RtRd_Execution_EXMEM, AddressRs_Decode_IDEX, AddressRt_Decode_IDEX, flush, IFID_flush, Controller_flush);
+
 Controller Controller_1(  INSTR_OP, INSTR_RS, INSTR_RT, INSTR_10_6, INSTR_5_0, JumpControl_Decode_Fetch, JRegControl_Decode_IDEX,	            // F
-                          RegDst_Decode_IDEX, ALUOp_Decode_IDEX, ALUSrc0_Decode_IDEX, ALUSrc1_Decode_IDEX, MuxStore_Decode_IDEX,   // EX
+                          RegDst_Decode_IDEX, ALUOp_output, ALUSrc0_Decode_IDEX, ALUSrc1_Decode_IDEX, MuxStore_Decode_IDEX,   // EX
                           Branch_Decode_IDEX, MemRead_Decode_IDEX, MemWrite_Decode_IDEX,	                                       // M
-                          MemReg_Decode_IDEX, RegWrite_Decode_IDEX, MuxLoad_Decode_IDEX);	                                       //WB
+                          MemReg_Decode_IDEX, RegWrite_Decode_IDEX, MuxLoad_Decode_IDEX);	 
+                          
+Mux32Bit2To1 Controller_Mux(ALUOp_Decode_IDEX, ALUOp_output, 32'd0, Controller_flush);
+                                                                //WB
 RegisterFile RegisterFile_1(readRsReg, readRtReg, RtRd_MEMWB_Decode, MemReg_WRITE_Decode, RegWrite_MEMWB_Decode, Clk, Rst, RS_Decode_IDEX, RT_Decode_IDEX);
 SignExtension SignExtension_1(INSTR_IMMEOFFSET, SignExt_Decode_IDEX);
 ZeroExtension ZeroExtension_1(INSTR_IMMEOFFSET, ZeroExt_Decode_IDEX);
