@@ -52,18 +52,21 @@ reg [31:0] PCResult_Fetch_Top;//switched to from for Fetch Stage wire [31:0] PCR
 
                             
 wire ClkOut;
-wire [31:0] PCSrc_MuxJump, MuxJump_PC, PC_IM_PCAdder;
+wire [31:0] PCSrc_MuxJump, MuxJump_PC, PC_IM_PCAdder, PCResult;
 reg [3:0] PCAdderResult_Concat_SL2;
 reg [31:0] JumpAddress_in;
-wire flush;
+// HAZARD
+wire flush, IFID_flush, Controller_flush;
                             
 //ClkDiv ClkDiv_1(Clk, Rst_ClkDiv, ClkOut); not in use for now
                             
 Mux32Bit2To1 PCSrc(PCSrc_MuxJump, PCAdder_Fetch_IFID, PCAdder_JReg_Memory_Fetch, Branch_Fetch);
-ProgramCounter PC_1(MuxJump_PC, PC_IM_PCAdder, Rst, Clk);
+// // Mux32Bit3To1(out, inA, inB, inC, sel);
+Mux32Bit2To1 HDUFlush(PCResult, MuxJump_PC, PC_IM_PCAdder, flush);
+//ProgramCounter(Address, PCResult, Rst, Clk);
+ProgramCounter PC_1(PCResult, PC_IM_PCAdder, Rst, Clk);
 InstructionMemory IM_1(PC_IM_PCAdder, INSTR_Fetch_IFID); 
-// module PCAdder(PCResult, flush, PCAddResult);
-PCAdder PCAdder_1(PC_IM_PCAdder, flush, PCAdder_Fetch_IFID);
+PCAdder PCAdder_1(PC_IM_PCAdder, PCAdder_Fetch_IFID);
 
                             
 always@(PCAdder_Fetch_IFID, PC_IM_PCAdder, JumpSL2_Decode_Fetch,PCAdderResult_Concat_SL2)begin//added cuz of syn warning PCAdderResult_Concat_SL2
@@ -82,7 +85,6 @@ Mux32Bit2To1 MuxJump(MuxJump_PC, PCSrc_MuxJump, JumpAddress_in, JumpControl_Deco
 
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 //#FETCH to DECODE#
-wire IFID_flush;
 //module IF_ID_Reg( Clk, Rst, IFID_Write, PCAdder_in, Instruction_in, PCAdder_out, Instruction_out);
 IF_ID_Reg IF_ID_Reg_1(Clk, Rst, IFID_flush, PCAdder_Fetch_IFID, INSTR_Fetch_IFID, PCAdder_IFID_IDEX, INSTR_IFID_Decode);
 
@@ -99,6 +101,7 @@ reg [5:0] INSTR_OP, INSTR_5_0;  reg [4:0] INSTR_RS, INSTR_RT, INSTR_RD, INSTR_10
 reg [15:0] INSTR_IMMEOFFSET;
 reg [31:0] readRsReg, readRtReg; // need 32bit inputs for Read Registers
 reg [25:0] Jump_IM_SL2;
+wire [5:0] ALUOp_output;
 always@(Clk, Rst,INSTR_IFID_Decode, MemReg_WRITE_Decode, RtRd_MEMWB_Decode, RegWrite_MEMWB_Decode,INSTR_RD,INSTR_RS,INSTR_RT)begin//added cuz of syn warnings INSTR_RD,INSTR_RS,INSTR_RT
     
     {INSTR_OP, INSTR_RS, INSTR_RT, INSTR_RD, INSTR_10_6, INSTR_5_0} <= INSTR_IFID_Decode;
@@ -113,9 +116,8 @@ end
 
 ShiftLeft2 SL2_Jump({6'd0,Jump_IM_SL2}, JumpSL2_Decode_Fetch);
 
-// Hazard
-wire Controller_flush;
-wire [5:0] ALUOp_output;
+// HAZARD~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 //module HDU(EXE_WriteRegDst, IFID_AddressRs, IFID_AddressRt, flush, IFID_flush, Controller_flush);
 HDU HDU_1(MemRead_IDEX_EXMEM, RtRd_Execution_EXMEM, AddressRs_Decode_IDEX, AddressRt_Decode_IDEX, flush, IFID_flush, Controller_flush);
 
@@ -166,6 +168,7 @@ always@(RS_IDEX_Execution, RT_IDEX_Execution)begin
 end
 
 ShiftLeft2 ShiftLeft2_1(SignExt_IDEX_Execution, SL2R_Adder);
+//module Adder(PCResult, ShiftLeft2Result, AddResult);
 Adder Adder_1(PCAdder_IDEX_Execution_EXMEM, SL2R_Adder, PCAdder_Execution_EXMEM);
 Mux32Bit3To1 ALUSrc1(ALUSrc1_ALU, RS_IDEX_Execution, AddressRs_IDEX_Execution, RT_IDEX_Execution, ALUSrc1_IDEX_Execution);
 Mux32Bit3To1 ALUSrc0(ALUSrc0_ALU, RT_IDEX_Execution, SignExt_IDEX_Execution, ZeroExt_IDEX_Execution, ALUSrc0_IDEX_Execution);

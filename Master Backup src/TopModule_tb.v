@@ -32,7 +32,7 @@ end
 initial begin
     Rst <= 1;
     Rst_ClkDiv <= 1;
-    #100;
+    #13;
     Rst <= 0;
     #10;
     Rst_ClkDiv <= 0;

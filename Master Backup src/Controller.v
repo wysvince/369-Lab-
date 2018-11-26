@@ -39,7 +39,7 @@ module Controller(readOp, readRS, readRT, read10_6, read5_0, JumpControl, JRegCo
 
         // nop
         if (readOp == 0 && readRS == 0 && readRT == 0 && read10_6 == 0 && read5_0 == 0) begin
-        ALUOp <= 6'd0; ALUSrc0 <= 2'bxx; ALUSrc1 <= 2'bxx; JumpControl <= 0; Branch <= 0;MemWrite <= 1'b0; RegWrite <= 0; JRegControl <= 0;
+        ALUOp <= 6'd0; ALUSrc0 <= 2'bxx; ALUSrc1 <= 2'bxx; JumpControl <= 0; Branch <= 0; MemRead <= 1'b0; MemWrite <= 1'b0; RegWrite <= 0; JRegControl <= 0;
         end
 		// sll
 		if(readOp == 6'd0 && readRS == 5'd0 && read10_6 != 0 && read5_0 == 6'd0) begin
