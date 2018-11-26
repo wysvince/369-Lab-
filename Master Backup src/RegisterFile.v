@@ -79,7 +79,6 @@ module RegisterFile(ReadReg1, ReadReg2, WriteReg, WriteData, RegWrite, Clk, Rst,
                 Register[i] <= 32'd0;
                 
             end
-            Register[17] <= 32'd300;
         end
 	end
 	
