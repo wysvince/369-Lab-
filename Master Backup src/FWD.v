@@ -22,9 +22,27 @@ always@(*)begin
 //    if(Controller_Fwd_OpCode == 0)begin
     
 //    end
+     // Rs and Rt depencies:
+   // WriteBack RegDst -> Rs
+   // Memory RegDst -> Rt
+   if(EXMEM_Fwd_RegWrite == 1 && ALUSrc1 == 0 && IDEX_Fwd_RegisterRs == MEMWB_Fwd_RegDst
+           && MEMWB_Fwd_RegWrite == 1 && ALUSrc0 == 0 && IDEX_Fwd_RegisterRt == EXMEM_Fwd_RegDst)
+   begin
+       Fwd_A <= 2;
+       Fwd_B <= 1; 
+   end
+   // Rs and Rt depencies:
+   // Memory RegDst -> Rs
+   // WriteBack RegDst -> Rt
+   else if(EXMEM_Fwd_RegWrite == 1 && ALUSrc1 == 0 && IDEX_Fwd_RegisterRs == EXMEM_Fwd_RegDst
+           && MEMWB_Fwd_RegWrite == 1 && ALUSrc0 == 0 && IDEX_Fwd_RegisterRt == MEMWB_Fwd_RegDst)
+   begin
+       Fwd_A <= 1;
+       Fwd_B <= 2; 
+   end
     
     //Forwarding from Memory Stage to Execution Stage
-    if(EXMEM_Fwd_RegWrite == 1 && ALUSrc1 == 0 && IDEX_Fwd_RegisterRs == EXMEM_Fwd_RegDst)begin
+    else if(EXMEM_Fwd_RegWrite == 1 && ALUSrc1 == 0 && IDEX_Fwd_RegisterRs == EXMEM_Fwd_RegDst)begin
         Fwd_A <= 1; 
         Fwd_B <= 0;
     end
@@ -42,6 +60,7 @@ always@(*)begin
         Fwd_A <= 0;
         Fwd_B <= 2;
     end
+   
     else begin
         Fwd_A <= 0;
         Fwd_B <= 0;

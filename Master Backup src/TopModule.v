@@ -37,7 +37,7 @@ wire Branch_EXMEM_Memory, MemRead_EXMEM_Memory, MemWrite_EXMEM_Memory, RegWrite_
 wire [1:0] MuxLoad_EXMEM_Memory;
 wire [31:0] PC2ndAdder_MEMWB_Write, ALUResult_EXMEM_Memory_MEMWB, RT_EXMEM_Memory, RtRd_EXMEM_MEMWB;
 
-wire [31:0] RT_Memory_MEMWB;
+wire [31:0] RT_Memory_MEMWB,SpeedUp;
 
 wire  [1:0] MemReg_MEMWB_WRITE, MemReg_EXMEM_MEMWB, MemReg_IDEX_EXMEM, MemReg_Decode_IDEX; 
 wire [31:0] PC2Adder_EXMEM_MEMWB, LoadData_MEMWB_WRITE, ALUResult_MEMWB_WRITE; 
@@ -128,7 +128,8 @@ Controller Controller_1(  INSTR_OP, INSTR_RS, INSTR_RT, INSTR_10_6, INSTR_5_0, J
                           
 Mux32Bit2To1 Controller_Mux(ALUOp_Decode_IDEX, ALUOp_output, 32'd0, Controller_flush);
                                                                 //WB
-RegisterFile RegisterFile_1(readRsReg, readRtReg, RtRd_MEMWB_Decode, MemReg_WRITE_Decode, RegWrite_MEMWB_Decode, Clk, Rst, RS_Decode_IDEX, RT_Decode_IDEX);
+Mux32Bit2To1 Speedup(SpeedUp, MemReg_WRITE_Decode,RT_Memory_MEMWB, MemRead_EXMEM_Memory);
+RegisterFile RegisterFile_1(readRsReg, readRtReg, RtRd_MEMWB_Decode, SpeedUp, RegWrite_MEMWB_Decode, Clk, Rst, RS_Decode_IDEX, RT_Decode_IDEX);
 SignExtension SignExtension_1(INSTR_IMMEOFFSET, SignExt_Decode_IDEX);
 ZeroExtension ZeroExtension_1(INSTR_IMMEOFFSET, ZeroExt_Decode_IDEX);
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------

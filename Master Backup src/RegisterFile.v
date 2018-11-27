@@ -85,19 +85,19 @@ module RegisterFile(ReadReg1, ReadReg2, WriteReg, WriteData, RegWrite, Clk, Rst,
 	
 	// reads content of register address ReadReg1 & ReadReg2 at negative edge Clk
 	always@(negedge Clk) begin 
-       ReadData1 <= Register[ReadReg1];
-       ReadData2 <= Register[ReadReg2];
+       ReadData1 = Register[ReadReg1];
+       ReadData2 = Register[ReadReg2];
     end
        
     // writes data to register address ReadReg1 & ReadReg2 at positive edge Clk
-    always@(negedge Clk) begin// switched from RegWrite, WriteData cuz of syn warnings
+    always@(posedge Clk) begin// switched from RegWrite, WriteData cuz of syn warnings
        if(RegWrite == 1 && WriteReg != 0)begin
 //           if(WriteReg == 32'd31)begin
 //                Register[WriteReg] <= 32'h8000018;
 //           end
 //           end
 //           else begin
-                Register[WriteReg] <= WriteData;
+                Register[WriteReg] = WriteData;
 //           end
        end
     end

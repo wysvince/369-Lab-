@@ -244,20 +244,20 @@ module Controller(readOp, readRS, readRT, read10_6, read5_0, JumpControl, JRegCo
 		end
 		// lb
 		if(readOp == 6'd32) begin
-		ALUOp <= 6'd41; RegDst <= 0; ALUSrc0 <= 2'd2; ALUSrc1 <= 2'd0; Branch <= 0;
-		MemRead <= 1; MemWrite <= 1'b0; RegWrite <= 1;   MemReg <= 2'd1; MuxLoad <= 2'd2; 
+		ALUOp <= 6'd41; RegDst <= 0; ALUSrc0 <= 2'd1; ALUSrc1 <= 2'd0; Branch <= 0;
+		MemRead <= 1; MemWrite <= 1'b0; RegWrite <= 1;   MemReg <= 2'd1; MuxLoad <= 2'd2;//using sign extend imm 
 		JumpControl <= 0; JRegControl <= 0;
 		end
 		// lh
 		if(readOp == 6'd33) begin
-		ALUOp <= 6'd42; RegDst <= 0; ALUSrc0 <= 2'd2; ALUSrc1 <= 2'd0; Branch <= 0;
-		MemRead <= 1; MemWrite <= 1'b0; RegWrite <= 1; MemReg <= 2'd1; MuxLoad <= 2'd1; 
+		ALUOp <= 6'd42; RegDst <= 0; ALUSrc0 <= 2'd1; ALUSrc1 <= 2'd0; Branch <= 0;
+		MemRead <= 1; MemWrite <= 1'b0; RegWrite <= 1; MemReg <= 2'd1; MuxLoad <= 2'd1; //using sign extend imm
 		JumpControl <= 0; JRegControl <= 0;
 		end
 		// lw
 		if(readOp == 6'd35) begin
-		ALUOp <= 6'd43; RegDst <= 0; ALUSrc0 <= 2'd2; ALUSrc1 <= 2'd0; Branch <= 0; JRegControl <= 0;
-		MemRead <= 1; MemWrite <= 1'b0; RegWrite <= 1;   MemReg <= 2'd1; MuxLoad <= 2'd0; JumpControl <= 0; 
+		ALUOp <= 6'd43; RegDst <= 0; ALUSrc0 <= 2'd1; ALUSrc1 <= 2'd0; Branch <= 0; JRegControl <= 0;
+		MemRead <= 1; MemWrite <= 1'b0; RegWrite <= 1;   MemReg <= 2'd1; MuxLoad <= 2'd0; JumpControl <= 0; //using sign extend imm
 		end
 		// sb
 		if(readOp == 6'd40) begin

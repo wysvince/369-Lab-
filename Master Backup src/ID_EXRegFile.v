@@ -105,26 +105,26 @@ module ID_EX_Reg(    RegDst_in, ALUOp_in, ALUSrc0_in, ALUSrc1_in, MuxStore_in,  
         end
         
         else begin
-            RegDst_out <=  RegDst_in;
-            ALUOp_out <=  ALUOp_in;
-            ALUSrc0_out <=  ALUSrc0_in;
-            ALUSrc1_out <=  ALUSrc1_in;
-            MuxStore_out <=  MuxStore_in;
-            Branch_out <=  Branch_in;
-            MemRead_out <=  MemRead_in;
-            MemWrite_out <=  MemWrite_in;
-            RegWrite_out <=  RegWrite_in;
-            MemReg_out <=  MemReg_in;
-            MuxLoad_out <=  MuxLoad_in;
-            PCAdder_out <=  PCAdder_in;
-            Rs_out <=  Rs_in;
-            Rt_out <=  Rt_in;
-            AddressRs_out <=  AddressRs_in;
-            AddressRt_out <=  AddressRt_in;
-            SignExt_out <=  SignExt_in;
-            ZeroExt_out <=  ZeroExt_in;
-            Rd_out <= Rd_in;
-            JRegControl_out <= JRegControl_in; 
+            RegDst_out =  RegDst_in;
+            ALUOp_out =  ALUOp_in;
+            ALUSrc0_out =  ALUSrc0_in;
+            ALUSrc1_out =  ALUSrc1_in;
+            MuxStore_out =  MuxStore_in;
+            Branch_out =  Branch_in;
+            MemRead_out =  MemRead_in;
+            MemWrite_out =  MemWrite_in;
+            RegWrite_out =  RegWrite_in;
+            MemReg_out =  MemReg_in;
+            MuxLoad_out =  MuxLoad_in;
+            PCAdder_out =  PCAdder_in;
+            Rs_out =  Rs_in;
+            Rt_out =  Rt_in;
+            AddressRs_out =  AddressRs_in;
+            AddressRt_out =  AddressRt_in;
+            SignExt_out =  SignExt_in;
+            ZeroExt_out =  ZeroExt_in;
+            Rd_out = Rd_in;
+            JRegControl_out = JRegControl_in; 
         end
     end
 endmodule
