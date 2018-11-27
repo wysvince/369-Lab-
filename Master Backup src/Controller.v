@@ -218,7 +218,7 @@ module Controller(readOp, readRS, readRT, read10_6, read5_0, JumpControl, JRegCo
 		end
 		// ori
 		if(readOp == 6'd13) begin
-		ALUOp <= 6'd36; RegDst <= 0; ALUSrc0 <= 2'b01; ALUSrc1 <= 0; Branch <= 0; 
+		ALUOp <= 6'd36; RegDst <= 0; ALUSrc0 <= 2'b10; ALUSrc1 <= 0; Branch <= 0; 
 		MemRead <= 0; MemWrite <= 1'b0; RegWrite <= 1;  MemReg <= 0; JumpControl <= 0; JRegControl <= 0;
 		end
 		// xori

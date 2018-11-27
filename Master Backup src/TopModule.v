@@ -119,7 +119,7 @@ ShiftLeft2 SL2_Jump({6'd0,Jump_IM_SL2}, JumpSL2_Decode_Fetch);
 // HAZARD~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 //module HDU(EXE_WriteRegDst, IFID_AddressRs, IFID_AddressRt, flush, IFID_flush, Controller_flush);
-HDU HDU_1(MemRead_IDEX_EXMEM, RtRd_Execution_EXMEM, AddressRs_Decode_IDEX, AddressRt_Decode_IDEX, flush, IFID_flush, Controller_flush);
+HDU HDU_1(ALUOp_IDEX_Execution, RtRd_Execution_EXMEM, AddressRs_Decode_IDEX, AddressRt_Decode_IDEX, flush, IFID_flush, Controller_flush);
 
 Controller Controller_1(  INSTR_OP, INSTR_RS, INSTR_RT, INSTR_10_6, INSTR_5_0, JumpControl_Decode_Fetch, JRegControl_Decode_IDEX,	            // F
                           RegDst_Decode_IDEX, ALUOp_output, ALUSrc0_Decode_IDEX, ALUSrc1_Decode_IDEX, MuxStore_Decode_IDEX,   // EX
