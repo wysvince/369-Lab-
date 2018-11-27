@@ -62,9 +62,9 @@ wire flush, IFID_flush, Controller_flush;
                             
 Mux32Bit2To1 PCSrc(PCSrc_MuxJump, PCAdder_Fetch_IFID, PCAdder_JReg_Memory_Fetch, Branch_Fetch);
 // // Mux32Bit3To1(out, inA, inB, inC, sel);
-Mux32Bit2To1 HDUFlush(PCResult, MuxJump_PC, PC_IM_PCAdder, flush);
+//Mux32Bit2To1 HDUFlush(PCResult, MuxJump_PC, PC_IM_PCAdder, flush);
 //ProgramCounter(Address, PCResult, flush, Rst, Clk);
-ProgramCounter PC_1(PCResult, PC_IM_PCAdder, flush, Rst, Clk);
+ProgramCounter PC_1(MuxJump_PC, PC_IM_PCAdder, flush, Rst, Clk);
 InstructionMemory IM_1(PC_IM_PCAdder, INSTR_Fetch_IFID); 
 PCAdder PCAdder_1(PC_IM_PCAdder, PCAdder_Fetch_IFID);
 

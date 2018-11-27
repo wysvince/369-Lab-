@@ -33,17 +33,13 @@ module IF_ID_Reg( Clk, Rst, IFID_flush, PCAdder_in, Instruction_in, PCAdder_out,
 	   Instruction_out <= 0;
 	   end
 	   else if(IFID_flush == 1)begin
-           PCAdder_out <= 32'dx;
-           Instruction_out <= 32'd0;
+//           PCAdder_out <= 32'dx;
+           //Instruction_out <= 32'd0;
 	   end
         else begin
             PCAdder_out <= PCAdder_in;
             Instruction_out <= Instruction_in;
         end
-//	   else begin
-//	    PCAdder_out <= readPCAdder;
-//	    Instruction_out <= readInstruction;
-//	   end
 	end
 
 endmodule

@@ -11,7 +11,7 @@ module ProgramCounter(Address, PCResult, flush, Rst, Clk);
                 PCResult <= 0;
         end
         else if(flush == 1)begin
-            PCResult <= Address - 4;
+            //PCResult <= Address - 4;
         end
         else begin
             PCResult <= Address;
