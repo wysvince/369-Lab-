@@ -40,7 +40,11 @@ always@(*)begin
        Fwd_A <= 1;
        Fwd_B <= 2; 
    end
-    
+    // sll case:
+    else if(EXMEM_Fwd_RegWrite == 1 && ALUSrc1 == 2 && ALUSrc0 == 2 && IDEX_Fwd_RegisterRt == EXMEM_Fwd_RegDst)begin
+        Fwd_A <= 1; 
+        Fwd_B <= 0;
+    end
     //Forwarding from Memory Stage to Execution Stage
     else if(EXMEM_Fwd_RegWrite == 1 && ALUSrc1 == 0 && IDEX_Fwd_RegisterRs == EXMEM_Fwd_RegDst)begin
         Fwd_A <= 1; 

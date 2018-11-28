@@ -35,12 +35,12 @@ wire ZERO_Execution_EXMEM;
 
 wire Branch_EXMEM_Memory, MemRead_EXMEM_Memory, MemWrite_EXMEM_Memory, RegWrite_EXMEM_MEMWB, ZERO_EXMEM_Memory;
 wire [1:0] MuxLoad_EXMEM_Memory;
-wire [31:0] PC2ndAdder_MEMWB_Write, ALUResult_EXMEM_Memory_MEMWB, RT_EXMEM_Memory, RtRd_EXMEM_MEMWB;
+wire [31:0] PC2ndAdder_MEMWB_Write, ALUResult_EXMEM_Memory_MEMWB, RT_EXMEM_Memory, PC2ndAdder_EXMEM_MEMWB_wire;
 
 wire [31:0] RT_Memory_MEMWB,SpeedUp;
 
 wire  [1:0] MemReg_MEMWB_WRITE, MemReg_EXMEM_MEMWB, MemReg_IDEX_EXMEM, MemReg_Decode_IDEX; 
-wire [31:0] PC2Adder_EXMEM_MEMWB, LoadData_MEMWB_WRITE, ALUResult_MEMWB_WRITE; 
+wire [31:0] RTRD_EXMEM_MEMWB_wire, LoadData_MEMWB_WRITE, ALUResult_MEMWB_WRITE; 
 reg [31:0] PCResult_Fetch_Top;//switched to from for Fetch Stage wire [31:0] PCResult_Fetch_Top; 
 
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -102,6 +102,7 @@ reg [15:0] INSTR_IMMEOFFSET;
 reg [31:0] readRsReg, readRtReg; // need 32bit inputs for Read Registers
 reg [25:0] Jump_IM_SL2;
 wire [5:0] ALUOp_output;
+wire [31:0] RegDst_output;
 always@(Clk, Rst,INSTR_IFID_Decode, MemReg_WRITE_Decode, RtRd_MEMWB_Decode, RegWrite_MEMWB_Decode,INSTR_RD,INSTR_RS,INSTR_RT)begin//added cuz of syn warnings INSTR_RD,INSTR_RS,INSTR_RT
     
     {INSTR_OP, INSTR_RS, INSTR_RT, INSTR_RD, INSTR_10_6, INSTR_5_0} <= INSTR_IFID_Decode;
@@ -119,7 +120,7 @@ ShiftLeft2 SL2_Jump({6'd0,Jump_IM_SL2}, JumpSL2_Decode_Fetch);
 // HAZARD~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 //module HDU(EXE_WriteRegDst, IFID_AddressRs, IFID_AddressRt, flush, IFID_flush, Controller_flush);
-HDU HDU_1(ALUOp_IDEX_Execution, RtRd_Execution_EXMEM, AddressRs_Decode_IDEX, AddressRt_Decode_IDEX, flush, IFID_flush, Controller_flush);
+HDU HDU_1(MemRead_IDEX_EXMEM, RtRd_Execution_EXMEM, AddressRs_Decode_IDEX, AddressRt_Decode_IDEX, flush, IFID_flush, Controller_flush);
 
 Controller Controller_1(  INSTR_OP, INSTR_RS, INSTR_RT, INSTR_10_6, INSTR_5_0, JumpControl_Decode_Fetch, JRegControl_Decode_IDEX,	            // F
                           RegDst_Decode_IDEX, ALUOp_output, ALUSrc0_Decode_IDEX, ALUSrc1_Decode_IDEX, MuxStore_Decode_IDEX,   // EX
@@ -129,7 +130,8 @@ Controller Controller_1(  INSTR_OP, INSTR_RS, INSTR_RT, INSTR_10_6, INSTR_5_0, J
 Mux32Bit2To1 Controller_Mux(ALUOp_Decode_IDEX, ALUOp_output, 32'd0, Controller_flush);
                                                                 //WB
 Mux32Bit2To1 Speedup(SpeedUp, MemReg_WRITE_Decode,RT_Memory_MEMWB, MemRead_EXMEM_Memory);
-RegisterFile RegisterFile_1(readRsReg, readRtReg, RtRd_MEMWB_Decode, SpeedUp, RegWrite_MEMWB_Decode, Clk, Rst, RS_Decode_IDEX, RT_Decode_IDEX);
+Mux32Bit2To1 SpeedupRegDst(RegDst_output, RtRd_MEMWB_Decode, RTRD_EXMEM_MEMWB_wire, MemRead_EXMEM_Memory);
+RegisterFile RegisterFile_1(readRsReg, readRtReg, RegDst_output, SpeedUp, RegWrite_MEMWB_Decode, Clk, Rst, RS_Decode_IDEX, RT_Decode_IDEX);
 SignExtension SignExtension_1(INSTR_IMMEOFFSET, SignExt_Decode_IDEX);
 ZeroExtension ZeroExtension_1(INSTR_IMMEOFFSET, ZeroExt_Decode_IDEX);
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -189,7 +191,7 @@ HiLoReg HiLoReg_1(ALU_HI, ALU_LO, HI_ALU, LO_ALU, Clk, Rst);
 //           Fwd_A, Fwd_B);
 
 FWD FWD_1(AddressRs_IDEX_Execution, RD_IDEX_Execution, AddressRt_IDEX_Execution, 
-          RegWrite_EXMEM_MEMWB, PC2Adder_EXMEM_MEMWB, 
+          RegWrite_EXMEM_MEMWB, RTRD_EXMEM_MEMWB_wire, 
           RegWrite_MEMWB_Decode, RtRd_MEMWB_Decode,
           ALUOp_IDEX_Execution, ALUSrc0_IDEX_Execution, ALUSrc1_IDEX_Execution,
           Fwd_A, Fwd_B);
@@ -205,6 +207,18 @@ end
                 
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 //#EXECUTION TO MEMORY#
+//module EX_MEM_Reg(Clk, Rst,
+//                     Branch_in, MemRead_in, MemWrite_in,	// M
+//                     RegWrite_in, MemReg_in, MuxLoad_in,                // WB
+//                     Branch_out, MemRead_out, MemWrite_out,	// M
+//                     RegWrite_out, MemReg_out, MuxLoad_out,              // WB
+//                     PCAdder_in, PCAdder_out,
+//                     PC2ndAdder_in, RtRd_out,
+//                     Zero_in, Zero_out,
+//                     ALUResult_in, ALUResult_out,
+//                     Rt_in, RtRd_in,
+//                     Rt_out, PC2ndAdder_out, JRegControl_in, JRegControl_out,
+//                     Rs_in, Rs_out);
 
 EX_MEM_Reg EX_MEM_Reg_1(Clk, Rst,
                          Branch_IDEX_EXMEM, MemRead_IDEX_EXMEM, MemWrite_IDEX_EXMEM,
@@ -212,11 +226,11 @@ EX_MEM_Reg EX_MEM_Reg_1(Clk, Rst,
                          Branch_EXMEM_Memory, MemRead_EXMEM_Memory, MemWrite_EXMEM_Memory,
                          RegWrite_EXMEM_MEMWB, MemReg_EXMEM_MEMWB, MuxLoad_EXMEM_Memory,
                          PCAdder_Execution_EXMEM, PCAdder_EXMEM_Memory,
-                         PCAdder_IDEX_Execution_EXMEM, PC2Adder_EXMEM_MEMWB,
+                         PCAdder_IDEX_Execution_EXMEM, RTRD_EXMEM_MEMWB_wire,
                          ZERO_Execution_EXMEM, ZERO_EXMEM_Memory,
                          ALUResult_Execution_EXMEM, ALUResult_EXMEM_Memory_MEMWB,
                          RT_Execution_EXMEM, RtRd_Execution_EXMEM,
-                         RT_EXMEM_Memory, RtRd_EXMEM_MEMWB, JRegControl_IDEX_EXMEM, JRegControl_EXMEM_Memory,
+                         RT_EXMEM_Memory, PC2ndAdder_EXMEM_MEMWB_wire, JRegControl_IDEX_EXMEM, JRegControl_EXMEM_Memory,
                          RS_IDEX_Execution, RS_EXMEM_Memory);   
 
                        
@@ -253,12 +267,20 @@ SignExtension SEH_1(DataMemory_MuxLoad [15:0], SEH_MuxLoad);
 Mux32Bit2To1 MuxJReg(PCAdder_JReg_Memory_Fetch, PCAdder_EXMEM_Memory, RS_EXMEM_Memory, JRegControl_EXMEM_Memory);            
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 //#MEMORY TO WRITE BACK#
+//module MEM_WB_Reg(MemReg_in, RegWrite_in, // WB
+//		  	 MemReg_out, RegWrite_out, // WB
+//		  	 ReadData_in, ReadData_out, // Data memory
+//		  	 ALUResult_in, ALUResult_out, // ALU
+//		  	 PC2ndAdder_in, RtRd_out, 
+//			 RtRd_in, PC2ndAdder_out,
+//		  	 Clk, Rst);
+
 MEM_WB_Reg MEM_WB_Reg_1(MemReg_EXMEM_MEMWB, RegWrite_EXMEM_MEMWB,
                            MemReg_MEMWB_WRITE, RegWrite_MEMWB_Decode,
                            RT_Memory_MEMWB, LoadData_MEMWB_WRITE,
                            ALUResult_EXMEM_Memory_MEMWB, ALUResult_MEMWB_WRITE,
-                           RtRd_EXMEM_MEMWB, RtRd_MEMWB_Decode,
-                           PC2Adder_EXMEM_MEMWB, PC2ndAdder_MEMWB_Write,
+                           PC2ndAdder_EXMEM_MEMWB_wire, RtRd_MEMWB_Decode,
+                           RTRD_EXMEM_MEMWB_wire, PC2ndAdder_MEMWB_Write,
                            Clk, Rst);           
             
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
