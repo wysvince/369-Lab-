@@ -11,7 +11,7 @@ module EX_MEM_Reg(Clk, Rst,
                      ALUResult_in, ALUResult_out,
                      Rt_in, RtRd_in,
                      Rt_out, PC2ndAdder_out, JRegControl_in, JRegControl_out,
-                     Rs_in, Rs_out);
+                     Rs_in, Rs_out, ALUOp_in, ALUOp_out);
 
 	
 	input Clk, Rst;	
@@ -32,6 +32,8 @@ module EX_MEM_Reg(Clk, Rst,
 	input Zero_in;
     reg ReadZero;
 	output reg Zero_out;
+	
+	input [5:0] ALUOp_in; output reg [5:0] ALUOp_out;
 
 //    always@(negedge Clk)begin
 //        ReadBranch <= Branch_in; 
@@ -80,6 +82,7 @@ module EX_MEM_Reg(Clk, Rst,
             RtRd_out <= RtRd_in;
             Zero_out <= Zero_in;
             JRegControl_out <= JRegControl_in;
+            ALUOp_out <= ALUOp_in;
         end
 	end
 

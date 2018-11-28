@@ -103,6 +103,11 @@ reg [31:0] readRsReg, readRtReg; // need 32bit inputs for Read Registers
 reg [25:0] Jump_IM_SL2;
 wire [5:0] ALUOp_output;
 wire [31:0] RegDst_output;
+
+// Forwarding
+wire [1:0] Fwd_A, Fwd_B, Fwd_C;
+wire [31:0] ALU_inputA, ALU_inputB;
+
 always@(Clk, Rst,INSTR_IFID_Decode, MemReg_WRITE_Decode, RtRd_MEMWB_Decode, RegWrite_MEMWB_Decode,INSTR_RD,INSTR_RS,INSTR_RT)begin//added cuz of syn warnings INSTR_RD,INSTR_RS,INSTR_RT
     
     {INSTR_OP, INSTR_RS, INSTR_RT, INSTR_RD, INSTR_10_6, INSTR_5_0} <= INSTR_IFID_Decode;
@@ -129,8 +134,8 @@ Controller Controller_1(  INSTR_OP, INSTR_RS, INSTR_RT, INSTR_10_6, INSTR_5_0, J
                           
 Mux32Bit2To1 Controller_Mux(ALUOp_Decode_IDEX, ALUOp_output, 32'd0, Controller_flush);
                                                                 //WB
-Mux32Bit2To1 Speedup(SpeedUp, MemReg_WRITE_Decode,RT_Memory_MEMWB, MemRead_EXMEM_Memory);
-Mux32Bit2To1 SpeedupRegDst(RegDst_output, RtRd_MEMWB_Decode, RTRD_EXMEM_MEMWB_wire, MemRead_EXMEM_Memory);
+Mux32Bit3To1 Speedup(SpeedUp, MemReg_WRITE_Decode,RT_Memory_MEMWB, ALUResult_EXMEM_Memory_MEMWB, Fwd_C);
+Mux32Bit3To1 SpeedupRegDst(RegDst_output, RtRd_MEMWB_Decode, RTRD_EXMEM_MEMWB_wire, RTRD_EXMEM_MEMWB_wire, Fwd_C);
 RegisterFile RegisterFile_1(readRsReg, readRtReg, RegDst_output, SpeedUp, RegWrite_MEMWB_Decode, Clk, Rst, RS_Decode_IDEX, RT_Decode_IDEX);
 SignExtension SignExtension_1(INSTR_IMMEOFFSET, SignExt_Decode_IDEX);
 ZeroExtension ZeroExtension_1(INSTR_IMMEOFFSET, ZeroExt_Decode_IDEX);
@@ -160,10 +165,8 @@ reg [7:0] Rt_Byte;//switched to 8'b from 32'b cuz of syn warnings
 wire [31:0] ALUSrc0_ALU, ALUSrc1_ALU;
 wire [31:0] ALU_HI, ALU_LO, HI_ALU, LO_ALU, SEH_StoreData, SEB_StoreData;
 wire [31:0] SL2R_Adder;
+wire [5:0] ALUOp_EXMEM;
 
-// Forwarding
-wire [1:0] Fwd_A, Fwd_B;
-wire [31:0] ALU_inputA, ALU_inputB;
 
 always@(RS_IDEX_Execution, RT_IDEX_Execution)begin
     Rt_HW <= RT_IDEX_Execution [15:0];
@@ -187,14 +190,16 @@ HiLoReg HiLoReg_1(ALU_HI, ALU_LO, HI_ALU, LO_ALU, Clk, Rst);
 //module FWD(IDEX_Fwd_RegisterRs, IDEX_Fwd_RegisterRd, IDEX_Fwd_RegisterRt, 
 //           EXMEM_Fwd_RegWrite, EXMEM_Fwd_RegDst, 
 //           MEMWB_Fwd_RegWrite, MEMWB_Fwd_RegDst,
+//           Decode_RegisterRs, Decode_RegisterRt,
 //           Controller_Fwd_OpCode, ALUSrc0, ALUSrc1, 
-//           Fwd_A, Fwd_B);
+//           Fwd_A, Fwd_B, Fwd_C);
 
 FWD FWD_1(AddressRs_IDEX_Execution, RD_IDEX_Execution, AddressRt_IDEX_Execution, 
           RegWrite_EXMEM_MEMWB, RTRD_EXMEM_MEMWB_wire, 
           RegWrite_MEMWB_Decode, RtRd_MEMWB_Decode,
-          ALUOp_IDEX_Execution, ALUSrc0_IDEX_Execution, ALUSrc1_IDEX_Execution,
-          Fwd_A, Fwd_B);
+          AddressRs_Decode_IDEX, AddressRt_Decode_IDEX,
+          ALUOp_EXMEM, ALUSrc0_IDEX_Execution, ALUSrc1_IDEX_Execution,
+          Fwd_A, Fwd_B, Fwd_C);
 
 // Mux32Bit3To1(out, inA, inB, inC, sel);
 Mux32Bit3To1 FWD_A(ALU_inputA, ALUSrc1_ALU, ALUResult_EXMEM_Memory_MEMWB, MemReg_WRITE_Decode, Fwd_A);
@@ -231,7 +236,7 @@ EX_MEM_Reg EX_MEM_Reg_1(Clk, Rst,
                          ALUResult_Execution_EXMEM, ALUResult_EXMEM_Memory_MEMWB,
                          RT_Execution_EXMEM, RtRd_Execution_EXMEM,
                          RT_EXMEM_Memory, PC2ndAdder_EXMEM_MEMWB_wire, JRegControl_IDEX_EXMEM, JRegControl_EXMEM_Memory,
-                         RS_IDEX_Execution, RS_EXMEM_Memory);   
+                         RS_IDEX_Execution, RS_EXMEM_Memory, ALUOp_IDEX_Execution, ALUOp_EXMEM);   
 
                        
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
